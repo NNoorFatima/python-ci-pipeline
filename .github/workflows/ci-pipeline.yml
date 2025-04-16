@@ -17,18 +17,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        node-version: '14'  # Or any other Node.js version you need
+        python-version: '3.x'  # Modify if you need a specific Python version
 
     - name: Install dependencies
       run: |
-        npm install  # Or yarn install if you're using yarn
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt  # Make sure to include your requirements file
 
     - name: Run Linting
       run: |
-        npm run lint  # Or yarn lint if you're using yarn
+        python -m flake8  # You can use flake8 or another Python linter
 
   build_and_push:
     name: Build and Push Docker Image
@@ -50,8 +51,8 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/my-app:latest .
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/my-python-app:latest .
 
     - name: Push Docker image
       run: |
-        docker push ${{ secrets.DOCKER_USERNAME }}/my-app:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/my-python-app:latest
