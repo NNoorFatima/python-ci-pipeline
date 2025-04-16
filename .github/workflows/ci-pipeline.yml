@@ -2,57 +2,42 @@ name: CI Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
-
+    branches: [ "main" ]
+  workflow_dispatch:
 jobs:
-  lint:
-    name: Run Lint Test
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.x'  # Modify if you need a specific Python version
+        python-version: '3.10'
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -r src/requirements.txt
+        cd src
+        pip install -r requirements.txt
 
-    - name: Run Linting
+    - name: Run flake8 linter
       run: |
-        flake8 --disable-noqa  # Run flake8 without plugins if you continue facing issues with plugins
-
-  build_and_push:
-    name: Build and Push Docker Image
-    runs-on: ubuntu-latest
-    needs: lint
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+        cd src
+        flake8 . --max-line-length=120
 
     - name: Log in to Docker Hub
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
-    - name: Build Docker image
-      run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/my-python-app:latest .
-
-    - name: Push Docker image
-      run: |
-        docker push ${{ secrets.DOCKER_USERNAME }}/my-python-app:latest
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./src
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/ci-demo-python:latest
