@@ -51,7 +51,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/my-python-app:latest .
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/my-python-app:latest ./src  # Specify build context path
 
     - name: Push Docker image
       run: |
