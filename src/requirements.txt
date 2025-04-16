@@ -1,4 +1,2 @@
-flask==2.0.1
-flake8==3.9.2
-flake8-docstrings
-flake8-import-order
+flake8>=4.0.0
+importlib_metadata>=6.0.0
