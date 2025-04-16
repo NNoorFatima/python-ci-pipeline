@@ -25,11 +25,11 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r src/requirements.txt  # Make sure to include your requirements file
+        pip install -r requirements.txt  # Install from the updated requirements file
 
     - name: Run Linting
       run: |
-        python -m flake8  # You can use flake8 or another Python linter
+        flake8 --disable-noqa  # Run flake8 without plugins if you continue facing issues with plugins
 
   build_and_push:
     name: Build and Push Docker Image
@@ -51,7 +51,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/my-python-app:latest ./src  # Specify build context path
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/my-python-app:latest .
 
     - name: Push Docker image
       run: |
